@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Processing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+  
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            text-align: center;
+  
+        }
+        .input-group {
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #868686;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        img {
+            max-width: 100%;
+            max-height: 600px; 
+            height: auto;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Functional group identification</h1>
+        
+        <div class="input-group">
+            Input JCAMP file:
+            <input type="file" id="fileInput">
+        </div>
+        
+        <div class="input-group">
+            SMILES code for spectrum:
+            <input type="text" id="smiles">
+        </div>
+
+        <div class="input-group">
+            <label for="absorptionCheckbox">Is absorption spectra:</label>
+            <input type="checkbox" id="absorptionCheckbox" name="is_abs">
+        </div>
+
+        <button onclick="processFile()">Process File</button>
+        <div class="output" id="outputField" style="display: none;"></div>
+        <img id="outputImage" style="display: none;">
+    </div>
+
+    <script>
+        function processFile() {
+            const file = document.getElementById('fileInput').files[0];
+            const smiles = document.getElementById('smiles').value;
+            const absCheckbox = document.getElementById('absorptionCheckbox');
+            const isAbsChecked = absCheckbox.checked;
+            const outputField = document.getElementById('outputField');
+            const outputImage = document.getElementById('outputImage');
+
+
+            if (file) {
+
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('smiles', smiles);
+                    formData.append('is_abs', isAbsChecked ? 'True' : 'False');
+
+                    console.log(formData);
+    
+                    fetch('/process_file', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        // Display response from Python backend
+                        outputField.textContent = data;
+                        outputField.style.display = 'block';
+
+                        const imageUrl = '/images/tmp.png';  // Update with actual image URL
+                        outputImage.src = imageUrl;
+                        outputImage.style.display = 'block';
+                        
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+
+
+            } else {
+                outputField.textContent = "Please select a file.";
+                outputField.style.display = 'block';
+            }
+        }
+    </script>
+    
+</body>
+</html>

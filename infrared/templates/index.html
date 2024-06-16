@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Processing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .input-group label {
+            margin-bottom: 5px;
+        }
+
+        .input-group input[type="file"],
+        .input-group input[type="text"],
+        .input-group input[type="checkbox"] {
+            padding: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .input-group input[type="checkbox"] {
+            width: auto;
+            margin-top: 10px;
+        }
+
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            background-color: #ffffff;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 600px;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Functional group identification</h1>
+        
+        <div class="input-group">
+            <label for="fileInput">Input JCAMP file:</label>
+            <input type="file" id="fileInput">
+        </div>
+        
+        <div class="input-group">
+            <label for="smiles">SMILES code for spectrum:</label>
+            <input type="text" id="smiles">
+        </div>
+
+        <div class="input-group">
+            <input type="checkbox" id="absorptionCheckbox" name="is_abs">
+            <label for="absorptionCheckbox">Is absorption spectra</label>
+        </div>
+
+        <button onclick="processFile()">Process File</button>
+        <div class="output" id="outputField" style="display: none;"></div>
+        <img id="outputImage" style="display: none;">
+    </div>
+
+    <script>
+        function processFile() {
+            const file = document.getElementById('fileInput').files[0];
+            const smiles = document.getElementById('smiles').value;
+            const absCheckbox = document.getElementById('absorptionCheckbox');
+            const isAbsChecked = absCheckbox.checked;
+            const outputField = document.getElementById('outputField');
+            const outputImage = document.getElementById('outputImage');
+
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('smiles', smiles);
+                formData.append('is_abs', isAbsChecked ? 'True' : 'False');
+
+                fetch('/process_file', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    const result = data['result'];
+                    let formattedOutput = '<strong>Predicted groups:</strong> ' + result[0].join(', ') + '<br>';
+                    formattedOutput += '<strong>Groups identified from SMILES:</strong> ' + result[1].join(', ');
+
+                    outputField.innerHTML = formattedOutput;
+                    outputField.style.display = 'block';
+                    
+                    // outputField.textContent = data;
+                    // outputField.style.display = 'block';
+
+                    const imageUrl = '/images/tmp.png';
+                    outputImage.src = imageUrl;
+                    outputImage.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            } else {
+                outputField.textContent = "Please select a file.";
+                outputField.style.display = 'block';
+            }
+        }
+    </script>
+    
+</body>
+</html>

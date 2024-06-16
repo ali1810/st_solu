@@ -1,0 +1,33 @@
+#firebase_admin
+#streamlit
+#python==3.9.5
+numpy==1.22.4
+streamlit-option-menu
+Pillow
+stmol==0.0.9
+py3Dmol==2.0.4
+#py3Dmol==1.8.1
+#stmol
+# recent change pandas~=1.4.2
+pandas
+# recent change streamlit~=1.21.0  
+streamlit 
+#streamlit~=1.28.0  
+shap~=0.41.0
+xgboost~=1.6.1
+scikit-learn
+rdkit-pypi  
+#~=2022.3.3
+matplotlib~=3.5.1
+streamlit_shap~=1.0.2
+pubchempy==1.0.4
+beautifulsoup4
+html5lib
+lxml
+requests[security] == 2.9.1 
+#numpy==1.22.4
+jcamp==1.2.1
+#jcamp==1.1 
+torch
+
+

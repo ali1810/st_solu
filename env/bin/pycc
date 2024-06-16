@@ -1,0 +1,3 @@
+#!/Users/mushtaqali/Downloads/streamlit-solubility-main/env/bin/python3
+from numba.pycc import main
+main()
